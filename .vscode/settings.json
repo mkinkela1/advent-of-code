@@ -5,6 +5,7 @@
         "ostream": "cpp",
         "istream": "cpp",
         "stack": "cpp",
-        "ios": "cpp"
+        "ios": "cpp",
+        "fstream": "cpp"
     }
 }
