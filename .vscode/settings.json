@@ -21,6 +21,11 @@
         "queue": "cpp",
         "chrono": "cpp",
         "limits": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "variant": "cpp",
+        "compare": "cpp",
+        "list": "cpp",
+        "__tree": "cpp",
+        "set": "cpp"
     }
 }
