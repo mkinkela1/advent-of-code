@@ -27,7 +27,9 @@
         "list": "cpp",
         "__tree": "cpp",
         "set": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "__tuple": "cpp",
+        "array": "cpp"
     },
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
 }
