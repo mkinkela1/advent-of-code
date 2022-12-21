@@ -29,7 +29,12 @@
         "set": "cpp",
         "map": "cpp",
         "__tuple": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "__bit_reference": "cpp",
+        "__mutex_base": "cpp",
+        "__split_buffer": "cpp",
+        "deque": "cpp",
+        "optional": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled",
 }
