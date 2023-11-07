@@ -46,7 +46,8 @@
     "__memory": "cpp",
     "locale": "cpp",
     "regex": "cpp",
-    "system_error": "cpp"
+    "system_error": "cpp",
+    "__config": "cpp"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }
