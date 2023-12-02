@@ -119,7 +119,8 @@ else
 fi
 
 touch "$parent_folder/$child_folder/solution.cpp"
-touch "$parent_folder/$child_folder/test.txt"
+touch "$parent_folder/$child_folder/test1.txt"
+touch "$parent_folder/$child_folder/test2.txt"
 curl --cookie "session=$AOC_COOKIE" https://adventofcode.com/$1/day/$2/input > "$parent_folder/$child_folder/input.txt"
 
 # Check if folder2 is 25 and print Merry Christmas with animation
