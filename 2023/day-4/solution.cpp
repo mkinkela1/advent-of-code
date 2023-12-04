@@ -99,43 +99,29 @@ public:
 
         for (int i = 0; i < this->cards.size(); i++)
         {
-            q.push(i);
-        }
-
-        while (!q.empty())
-        {
-            int cardIndex = q.front();
-            q.pop();
+            ++cache[i];
 
             int winningCount = 0;
+            vector<int> winningNumbers = this->cards[i].first;
+            vector<int> myNumbers = this->cards[i].second;
 
-            if (cache.find(cardIndex) != cache.end())
+            for (auto number : winningNumbers)
             {
-                sol += cache[cardIndex];
-                winningCount = cache[cardIndex];
-            }
-            else
-            {
-                vector<int> winningNumbers = this->cards[cardIndex].first;
-                vector<int> myNumbers = this->cards[cardIndex].second;
-
-                for (auto number : winningNumbers)
+                if (find(myNumbers.begin(), myNumbers.end(), number) != myNumbers.end())
                 {
-                    if (find(myNumbers.begin(), myNumbers.end(), number) != myNumbers.end())
-                    {
-                        winningCount++;
-                    }
+                    winningCount++;
                 }
-
-                cache[cardIndex] = winningCount;
-                sol += winningCount + 1;
             }
 
-            for (int i = 1; i <= winningCount; i++)
+            for (int j = 1; i + j < this->cards.size() && j <= winningCount; j++)
             {
-                if (cardIndex + i < this->cards.size())
-                    q.push(cardIndex + i);
+                cache[i + j] += cache[i];
             }
+        }
+
+        for (auto it = cache.begin(); it != cache.end(); it++)
+        {
+            sol += it->second;
         }
 
         return sol;
