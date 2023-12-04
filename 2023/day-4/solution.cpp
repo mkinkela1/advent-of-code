@@ -95,6 +95,8 @@ public:
     {
         int sol = 0;
         queue<int> q;
+        map<int, int> cache;
+
         for (int i = 0; i < this->cards.size(); i++)
         {
             q.push(i);
@@ -104,18 +106,29 @@ public:
         {
             int cardIndex = q.front();
             q.pop();
-            ++sol;
-
-            vector<int> winningNumbers = this->cards[cardIndex].first;
-            vector<int> myNumbers = this->cards[cardIndex].second;
 
             int winningCount = 0;
-            for (auto number : winningNumbers)
+
+            if (cache.find(cardIndex) != cache.end())
             {
-                if (find(myNumbers.begin(), myNumbers.end(), number) != myNumbers.end())
+                sol += cache[cardIndex];
+                winningCount = cache[cardIndex];
+            }
+            else
+            {
+                vector<int> winningNumbers = this->cards[cardIndex].first;
+                vector<int> myNumbers = this->cards[cardIndex].second;
+
+                for (auto number : winningNumbers)
                 {
-                    winningCount++;
+                    if (find(myNumbers.begin(), myNumbers.end(), number) != myNumbers.end())
+                    {
+                        winningCount++;
+                    }
                 }
+
+                cache[cardIndex] = winningCount;
+                sol += winningCount + 1;
             }
 
             for (int i = 1; i <= winningCount; i++)
