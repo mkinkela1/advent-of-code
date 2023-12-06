@@ -41,6 +41,7 @@ private:
     fstream fin;
     vector<long long> seeds;
     vector<vector<Range>> ranges;
+    map<long long, long long> cache;
 
     Mapper stringToEnum(string mapper)
     {
@@ -101,34 +102,6 @@ private:
         }
     }
 
-    auto checkIntervals(vector<vector<Range>> &ranges, vector<pair<long long, long long>> seeds, long long target) -> long long
-    {
-        for (auto &mapper : this->ranges)
-        {
-            bool found = false;
-            for (auto &range : mapper)
-            {
-                if (target >= range.destRangeStart && target < range.destRangeStart + range.rangeLength)
-                {
-                    target = range.sourceRangeStart + (target - range.destRangeStart);
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-                return -1;
-        }
-
-        for (auto seed : seeds)
-        {
-            if (target >= seed.first && target < seed.second)
-                return target;
-        }
-
-        return -1;
-    }
-
 public:
     Solution(string fileName)
     {
@@ -166,27 +139,12 @@ public:
 
         for (int i = 0; i < this->seeds.size(); i += 2)
         {
-            seeds.push_back(make_pair(this->seeds[i], this->seeds[i + 1]));
+            seeds.push_back(make_pair(this->seeds[i], this->seeds[i] + this->seeds[i + 1]));
         }
 
-        vector<Range> locationMappers = this->ranges[6];
-        this->ranges.pop_back();
-
-        reverse(this->ranges.begin(), this->ranges.end());
-        sort(locationMappers.begin(), locationMappers.end(), [](Range a, Range b)
-             { return a.destRangeStart < b.destRangeStart; });
-
-        for (auto &locationMapper : locationMappers)
+        for (auto seed : seeds)
         {
-            for (long long dest = locationMapper.destRangeStart; dest < locationMapper.destRangeStart + locationMapper.rangeLength; dest++)
-            {
-                cout << dest << endl;
-                if (this->checkIntervals(this->ranges, seeds, dest) != -1)
-                    return dest;
-            }
         }
-
-        return -1;
     }
 };
 
