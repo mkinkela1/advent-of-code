@@ -44,10 +44,10 @@ public:
     {
         if (useJocker)
         {
-            return this->sortedCards.size() == 2 && this->sortedCards['J'] > 1 || this->sortedCards.size() == 1;
+            if (this->sortedCards.size() == 2 && this->sortedCards['J'] > 0)
+                return true;
         }
-        else
-            return this->sortedCards.size() == 1;
+        return this->sortedCards.size() == 1;
     }
 
     auto isFourOfAKind(bool useJocker = false) -> bool
@@ -73,7 +73,11 @@ public:
             {
                 hasThree = true;
             }
-            if (card.second == 2)
+            if (card.second == 2 && useJocker && card.first != 'J')
+            {
+                hasTwo++;
+            }
+            else if (card.second == 2 && !useJocker)
             {
                 hasTwo++;
             }
