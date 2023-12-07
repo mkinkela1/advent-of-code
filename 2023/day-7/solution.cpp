@@ -40,111 +40,96 @@ public:
         return this->cards;
     }
 
-    auto isFiveOfAKind() -> bool
+    auto isFiveOfAKind(bool useJocker = false) -> bool
     {
-        return this->sortedCards.size() == 1;
+        if (useJocker)
+        {
+            return this->sortedCards.size() == 2 && this->sortedCards['J'] > 1 || this->sortedCards.size() == 1;
+        }
+        else
+            return this->sortedCards.size() == 1;
     }
 
-    auto isFourOfAKind() -> bool
+    auto isFourOfAKind(bool useJocker = false) -> bool
     {
-        if (this->sortedCards.size() != 2)
-            return false;
-
-        bool hasFour = false;
-        bool hasOne = false;
         for (auto card : this->sortedCards)
         {
-            if (card.second == 4)
+            if (card.second == 4 || useJocker && card.first != 'J' && card.second + this->sortedCards['J'] == 4)
             {
-                hasFour = true;
-            }
-            else if (card.second == 1)
-            {
-                hasOne = true;
+                return true;
             }
         }
 
-        return hasFour && hasOne;
+        return false;
     }
 
-    auto isFullHouse() -> bool
+    auto isFullHouse(bool useJocker = false) -> bool
     {
-        if (this->sortedCards.size() != 2)
-            return false;
-
         bool hasThree = false;
-        bool hasTwo = false;
-        for (auto card : this->sortedCards)
-        {
-            if (card.second == 3)
-            {
-                hasThree = true;
-            }
-            else if (card.second == 2)
-            {
-                hasTwo = true;
-            }
-        }
-
-        return hasThree && hasTwo;
-    }
-
-    auto isThreeOfAKind() -> bool
-    {
-        if (this->sortedCards.size() != 3)
-            return false;
-
-        bool hasThree = false;
-        bool hasOne = false;
-        for (auto card : this->sortedCards)
-        {
-            if (card.second == 3)
-            {
-                hasThree = true;
-            }
-            else if (card.second == 1)
-            {
-                hasOne = true;
-            }
-        }
-
-        return hasThree && hasOne;
-    }
-
-    auto isTwoPairs() -> bool
-    {
-        if (this->sortedCards.size() != 3)
-            return false;
-
         int hasTwo = 0;
-        bool hasOne = false;
+        for (auto card : this->sortedCards)
+        {
+            if (card.second == 3)
+            {
+                hasThree = true;
+            }
+            if (card.second == 2)
+            {
+                hasTwo++;
+            }
+        }
+
+        return hasThree && hasTwo == 1 ||
+               useJocker && this->sortedCards['J'] == 1 && hasTwo == 2 ||
+               useJocker && this->sortedCards['J'] == 2 && hasTwo == 1 ||
+               useJocker && this->sortedCards['J'] == 3 && hasTwo == 0;
+    }
+
+    auto isThreeOfAKind(bool useJocker = false) -> bool
+    {
+        for (auto card : this->sortedCards)
+        {
+            if (card.second == 3 || useJocker && card.first != 'J' && card.second + this->sortedCards['J'] == 3)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    auto isTwoPairs(bool useJocker = false) -> bool
+    {
+        int hasTwo = 0;
         for (auto card : this->sortedCards)
         {
             if (card.second == 2)
             {
                 hasTwo++;
             }
-            else if (card.second == 1)
-            {
-                hasOne = true;
-            }
         }
 
-        return hasTwo == 2 && hasOne;
+        if (useJocker && hasTwo == 1 && this->sortedCards['J'] >= 1)
+            return true;
+
+        if (useJocker && hasTwo == 0 && this->sortedCards['J'] == 2)
+            return true;
+
+        return hasTwo == 2;
     }
 
-    auto isOnePair() -> bool
+    auto isOnePair(bool useJocker = false) -> bool
     {
-        bool hasOne = false;
         for (auto card : this->sortedCards)
         {
-            if (card.second == 1)
-            {
-                hasOne = true;
-            }
+            if (card.second == 2)
+                return true;
         }
 
-        return hasOne;
+        if (useJocker && this->sortedCards['J'] == 1)
+            return true;
+
+        return false;
     }
 };
 
@@ -166,13 +151,13 @@ private:
         }
     }
 
-    auto highCard(Hand h1, Hand h2) -> int
+    auto highCard(Hand h1, Hand h2, bool useJocker = false) -> int
     {
         map<char, int> ranks;
         ranks['A'] = 14;
         ranks['K'] = 13;
         ranks['Q'] = 12;
-        ranks['J'] = 11;
+        ranks['J'] = useJocker ? 1 : 11;
         ranks['T'] = 10;
         ranks['9'] = 9;
         ranks['8'] = 8;
@@ -185,50 +170,66 @@ private:
 
         for (int i = 0; i < 5; i++)
         {
-            if (ranks[h1.getCards()[i]] < ranks[h2.getCards()[i]])
+            int r1 = ranks[h1.getCards()[i]];
+            int r2 = ranks[h2.getCards()[i]];
+            if (r1 > r2)
             {
-                return -1;
+                return true;
             }
-            else if (ranks[h1.getCards()[i]] > ranks[h2.getCards()[i]])
+            else if (r1 < r2)
             {
-                return 1;
+                return false;
             }
         }
+
+        return true;
     }
 
-    friend bool operator<(Hand &lhs, Hand &rhs)
+    auto cmp(Hand &lhs, Hand &rhs, bool useJocker = false) -> bool
     {
-        if (lhs.isFiveOfAKind() && !rhs.isFiveOfAKind())
+        if (lhs.isFiveOfAKind(useJocker) && !rhs.isFiveOfAKind(useJocker))
             return true;
-        if (lhs.isFiveOfAKind() && rhs.isFiveOfAKind())
-            return lhs.highCard() < rhs.highCard();
+        if (!lhs.isFiveOfAKind(useJocker) && rhs.isFiveOfAKind(useJocker))
+            return false;
+        if (lhs.isFiveOfAKind(useJocker) && rhs.isFiveOfAKind(useJocker))
+            return this->highCard(lhs, rhs, useJocker);
 
-        if (lhs.isFourOfAKind() && !rhs.isFourOfAKind())
+        if (lhs.isFourOfAKind(useJocker) && !rhs.isFourOfAKind(useJocker))
             return true;
-        if (lhs.isFourOfAKind() && rhs.isFourOfAKind())
-            return lhs.highCard() < rhs.highCard();
+        if (!lhs.isFourOfAKind(useJocker) && rhs.isFourOfAKind(useJocker))
+            return false;
+        if (lhs.isFourOfAKind(useJocker) && rhs.isFourOfAKind(useJocker))
+            return this->highCard(lhs, rhs, useJocker);
 
-        if (lhs.isFullHouse() && !rhs.isFullHouse())
+        if (lhs.isFullHouse(useJocker) && !rhs.isFullHouse(useJocker))
             return true;
-        if (lhs.isFullHouse() && rhs.isFullHouse())
-            return lhs.highCard() < rhs.highCard();
+        if (!lhs.isFullHouse(useJocker) && rhs.isFullHouse(useJocker))
+            return false;
+        if (lhs.isFullHouse(useJocker) && rhs.isFullHouse(useJocker))
+            return this->highCard(lhs, rhs, useJocker);
 
-        if (lhs.isThreeOfAKind() && !rhs.isThreeOfAKind())
+        if (lhs.isThreeOfAKind(useJocker) && !rhs.isThreeOfAKind(useJocker))
             return true;
-        if (lhs.isThreeOfAKind() && rhs.isThreeOfAKind())
-            return lhs.highCard() < rhs.highCard();
+        if (!lhs.isThreeOfAKind(useJocker) && rhs.isThreeOfAKind(useJocker))
+            return false;
+        if (lhs.isThreeOfAKind(useJocker) && rhs.isThreeOfAKind(useJocker))
+            return this->highCard(lhs, rhs, useJocker);
 
-        if (lhs.isTwoPairs() && !rhs.isTwoPairs())
+        if (lhs.isTwoPairs(useJocker) && !rhs.isTwoPairs(useJocker))
             return true;
-        if (lhs.isTwoPairs() && rhs.isTwoPairs())
-            return lhs.highCard() < rhs.highCard();
+        if (!lhs.isTwoPairs(useJocker) && rhs.isTwoPairs(useJocker))
+            return false;
+        if (lhs.isTwoPairs(useJocker) && rhs.isTwoPairs(useJocker))
+            return this->highCard(lhs, rhs, useJocker);
 
-        if (lhs.isOnePair() && !rhs.isOnePair())
+        if (lhs.isOnePair(useJocker) && !rhs.isOnePair(useJocker))
             return true;
-        if (lhs.isOnePair() && rhs.isOnePair())
-            return lhs.highCard() < rhs.highCard();
+        if (!lhs.isOnePair(useJocker) && rhs.isOnePair(useJocker))
+            return false;
+        if (lhs.isOnePair(useJocker) && rhs.isOnePair(useJocker))
+            return this->highCard(lhs, rhs, useJocker);
 
-        return lhs.highCard() < rhs.highCard();
+        return this->highCard(lhs, rhs, useJocker);
     }
 
 public:
@@ -239,8 +240,32 @@ public:
         this->fin.close();
     }
 
-    auto part1() -> string { return "Not solved"; }
-    auto part2() -> string { return "Not solved"; }
+    auto part1() -> int
+    {
+        sort(this->hands.begin(), this->hands.end(), [this](Hand &lhs, Hand &rhs)
+             { return !this->cmp(lhs, rhs); });
+
+        int sol = 0;
+        for (int i = 0; i < this->hands.size(); ++i)
+        {
+            sol += (i + 1) * this->hands[i].getBid();
+        }
+
+        return sol;
+    }
+    auto part2() -> int
+    {
+        sort(this->hands.begin(), this->hands.end(), [this](Hand &lhs, Hand &rhs)
+             { return !this->cmp(lhs, rhs, true); });
+
+        int sol = 0;
+        for (int i = 0; i < this->hands.size(); ++i)
+        {
+            sol += (i + 1) * this->hands[i].getBid();
+        }
+
+        return sol;
+    }
 };
 
 auto main() -> int
