@@ -13,16 +13,6 @@
 
 using namespace std;
 
-long long unsigned gcd(long long unsigned a, long long unsigned b)
-{
-    if (b == 0)
-        return a;
-
-    return gcd(b, a % b);
-}
-
-long long unsigned lcm(long long unsigned a, long long unsigned b) { return (a / gcd(a, b)) * b; }
-
 class Solution
 {
 private:
