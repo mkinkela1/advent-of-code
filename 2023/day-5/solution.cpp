@@ -102,6 +102,15 @@ private:
         }
     }
 
+    auto getSeed(long long seed, vector<Range> mapper) -> long long
+    {
+        for (auto range : mapper)
+            if (seed >= range.destRangeStart && seed < range.destRangeStart + range.rangeLength)
+                return range.sourceRangeStart + (seed - range.destRangeStart);
+
+        return seed;
+    }
+
 public:
     Solution(string fileName)
     {
@@ -112,9 +121,11 @@ public:
 
     auto part1() -> long long
     {
+        vector<long long> seeds = this->seeds;
+
         for (auto mapper : this->ranges)
         {
-            for (auto &seed : this->seeds)
+            for (auto &seed : seeds)
             {
                 for (auto range : mapper)
                 {
@@ -128,11 +139,12 @@ public:
         }
 
         long long sol = __LONG_LONG_MAX__;
-        for (auto seed : this->seeds)
+        for (auto seed : seeds)
             sol = min(sol, seed);
 
         return sol;
     }
+
     auto part2() -> long long
     {
         vector<pair<long long, long long>> seeds;
@@ -142,8 +154,18 @@ public:
             seeds.push_back(make_pair(this->seeds[i], this->seeds[i] + this->seeds[i + 1]));
         }
 
-        for (auto seed : seeds)
+        this->ranges.pop_back();
+        reverse(this->ranges.begin(), this->ranges.end());
+
+        for (int i = 0; i < 100000000; ++i)
         {
+            long long seed = i;
+            for (auto mapper : this->ranges)
+                seed = this->getSeed(seed, mapper);
+
+            for (auto s : seeds)
+                if (seed >= s.first && seed < s.second)
+                    return i;
         }
     }
 };
