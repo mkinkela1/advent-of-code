@@ -37,31 +37,35 @@ private:
         this->patterns.push_back(pattern);
     }
 
-    auto horizontalMirroring(vector<string> pattern) -> long long
+    auto horizontalMirroring(vector<string> pattern, int prevHm = -1) -> long long
     {
-        for (long long i = 0; i < pattern.size(); i++)
+        for (long long i = 0; i < pattern.size() - 1; i++)
         {
-            if (pattern[i] == pattern[i + 1])
+            if (i + 1 != prevHm)
             {
-                bool found = true;
-                long long ret = 0;
-                for (int j = i + 1, k = i; k >= 0 && j < pattern.size(); --k, ++j, ++ret)
+                if (pattern[i] == pattern[i + 1])
                 {
-                    if (pattern[j] != pattern[k])
+                    bool found = true;
+                    bool tookCheckLine = false;
+                    long long ret = 0;
+                    for (int j = i + 1, k = i; k >= 0 && j < pattern.size(); --k, ++j, ++ret)
                     {
-                        found = false;
-                        break;
+                        if (pattern[j] != pattern[k])
+                        {
+                            found = false;
+                            break;
+                        }
                     }
+                    if (found)
+                        return i + 1;
                 }
-                if (found)
-                    return i + 1;
             }
         }
 
-        return 0LL;
+        return -1;
     }
 
-    auto verticalMirroring(vector<string> pattern) -> long long
+    auto verticalMirroring(vector<string> pattern, int prevVm = -1) -> long long
     {
         vector<string> rotatedPattern;
         for (int i = 0; i < pattern[0].size(); i++)
@@ -74,7 +78,7 @@ private:
             rotatedPattern.push_back(row);
         }
 
-        return this->horizontalMirroring(rotatedPattern);
+        return this->horizontalMirroring(rotatedPattern, prevVm);
     }
 
     auto getMirrorsWithMistake(vector<string> pattern) -> pair<long long, long long>
@@ -89,15 +93,11 @@ private:
                 vector<string> newPattern = pattern;
                 newPattern[i][j] = pattern[i][j] == '#' ? '.' : '#';
 
-                long long hm = this->horizontalMirroring(newPattern);
-                long long vm = this->verticalMirroring(newPattern);
+                long long hm = this->horizontalMirroring(newPattern, prevHm);
+                long long vm = this->verticalMirroring(newPattern, prevVm);
 
-                if (hm == 0 && vm == 0)
-                    continue;
-                if (vm == prevVm && hm != prevHm)
-                    return {0, hm};
-                if (hm == prevHm && vm != prevVm)
-                    return {vm, 0};
+                if (hm > 0 || vm > 0)
+                    return {vm, hm};
             }
         }
 
@@ -115,14 +115,12 @@ public:
     auto part1() -> long long
     {
         long long sol = 0;
-        int i = 0;
         for (auto pattern : this->patterns)
         {
-            ++i;
             long long vm = this->verticalMirroring(pattern);
             long long hm = this->horizontalMirroring(pattern);
-            sol += vm;
-            sol += 100 * hm;
+            sol += vm == -1 ? 0 : vm;
+            sol += 100 * (hm == -1 ? 0 : hm);
         }
 
         return sol;
@@ -133,8 +131,8 @@ public:
         for (auto pattern : this->patterns)
         {
             auto [vm, hm] = this->getMirrorsWithMistake(pattern);
-            sol += vm;
-            sol += 100 * hm;
+            sol += vm == -1 ? 0 : vm;
+            sol += 100 * (hm == -1 ? 0 : hm);
         }
 
         return sol;
