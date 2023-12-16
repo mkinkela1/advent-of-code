@@ -9,6 +9,8 @@
     "__split_buffer": "cpp",
     "deque": "cpp",
     "list": "cpp",
-    "iosfwd": "cpp"
+    "iosfwd": "cpp",
+    "map": "cpp",
+    "queue": "cpp"
   }
 }
