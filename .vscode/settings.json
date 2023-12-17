@@ -11,6 +11,7 @@
     "list": "cpp",
     "iosfwd": "cpp",
     "map": "cpp",
-    "queue": "cpp"
+    "queue": "cpp",
+    "tuple": "cpp"
   }
 }
