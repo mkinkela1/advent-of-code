@@ -8,6 +8,8 @@
 #include <stack>
 #include <array>
 #include <unordered_map>
+#include "../../utils/picks_formula.h"
+#include "../../utils/shoelace_area.h"
 
 using namespace std;
 
@@ -66,25 +68,6 @@ private:
         }
     }
 
-    auto calculate(vector<pair<int, int>> points) -> long long
-    {
-        long long ret = 0;
-
-        points.push_back(points[0]);
-        for (int i = 0; i < points.size() - 1; ++i)
-        {
-            int X1 = points[i].first;
-            int Y1 = points[i].second;
-            int X2 = points[i + 1].first;
-            int Y2 = points[i + 1].second;
-            ret += X1 * Y2 - X2 * Y1;
-        }
-
-        ret /= 2;
-
-        return ret;
-    }
-
 public:
     Solution(string fileName)
     {
@@ -93,115 +76,47 @@ public:
         this->fin.close();
     }
 
-    auto part1() -> int
+    auto part1() -> long long
     {
-        int sol = 0;
-        map<pair<int, int>, int> grid;
+        vector<pair<long long, long long>> points;
+        long long perimeter = 0LL;
 
-        int x = 0;
-        int y = 0;
-        int minX = INT_MAX, maxX = INT_MIN, minY = INT_MAX, maxY = INT_MIN;
+        long long x = 0;
+        long long y = 0;
+        points.push_back(make_pair(x, y));
         for (auto instruction : this->instructions)
         {
-            if (!grid[make_pair(x, y)])
-                ++sol;
+            long long prevX = x;
+            long long prevY = y;
             if (instruction.op == "U")
-            {
-                for (int i = 0; i < instruction.arg; i++)
-                {
-                    x--;
-                    grid[make_pair(x, y)] = 1;
-                }
-            }
+                x -= instruction.arg;
             else if (instruction.op == "D")
-            {
-                for (int i = 0; i < instruction.arg; i++)
-                {
-                    x++;
-                    grid[make_pair(x, y)] = 1;
-                }
-            }
+                x += instruction.arg;
             else if (instruction.op == "L")
-            {
-                for (int i = 0; i < instruction.arg; i++)
-                {
-                    y--;
-                    grid[make_pair(x, y)] = 1;
-                }
-            }
+                y -= instruction.arg;
             else if (instruction.op == "R")
-            {
-                for (int i = 0; i < instruction.arg; i++)
-                {
-                    y++;
-                    grid[make_pair(x, y)] = 1;
-                }
-            }
+                y += instruction.arg;
 
-            minX = min(minX, x);
-            maxX = max(maxX, x);
-            minY = min(minY, y);
-            maxY = max(maxY, y);
-        }
-        vector<string> grid2(maxX - minX + 1, string(maxY - minY + 1, '.'));
-        for (auto it : grid)
-        {
-            grid2[it.first.first + abs(minX)][it.first.second + abs(minY)] = '#';
+            points.push_back(make_pair(x, y));
+            perimeter += labs(prevX - x) + labs(prevY - y);
         }
 
-        grid2.insert(grid2.begin(), string(grid2[0].size(), '.'));
-        grid2.push_back(string(grid2[0].size(), '.'));
-        for (int i = 0; i < grid2.size(); i++)
-        {
-            grid2[i].insert(grid2[i].begin(), '.');
-            grid2[i].push_back('.');
-        }
-
-        queue<pair<int, int>> q;
-        vector<vector<bool>> visited(grid2.size(), vector<bool>(grid2[0].size(), false));
-
-        q.push(make_pair(0, 0));
-        while (!q.empty())
-        {
-            auto p = q.front();
-            q.pop();
-
-            for (int i = 0; i < 4; ++i)
-            {
-                int nx = p.first + dx[i];
-                int ny = p.second + dy[i];
-                if (nx < 0 || nx >= grid2.size() || ny < 0 || ny >= grid2[0].size())
-                    continue;
-                if (visited[nx][ny])
-                    continue;
-                if (grid2[nx][ny] == '#')
-                    continue;
-
-                visited[nx][ny] = true;
-                q.push(make_pair(nx, ny));
-            }
-        }
-
-        for (int i = 0; i < grid2.size(); ++i)
-            for (int j = 0; j < grid2[0].size(); ++j)
-                sol += !visited[i][j];
-
-        return sol - 1;
+        long long area = getShoelaceArea(points);
+        return getPointsInsidePolygon(area, perimeter);
     }
     auto part2() -> long long
     {
-        long long sol = 0LL;
-        long long area = 0LL;
+        long long perimeter = 0LL;
 
-        int x = 0;
-        int y = 0;
+        long long x = 0;
+        long long y = 0;
 
-        vector<pair<int, int>> points;
+        vector<pair<long long, long long>> points;
         points.push_back(make_pair(x, y));
         for (auto instruction : this->instructions2)
         {
-            int prevX = x;
-            int prevY = y;
+            long long prevX = x;
+            long long prevY = y;
             if (instruction.op == "U")
                 x -= instruction.arg;
             else if (instruction.op == "D")
@@ -211,18 +126,11 @@ public:
             else if (instruction.op == "R")
                 y += instruction.arg;
             points.push_back(make_pair(x, y));
-            area += abs(prevX - x) + abs(prevY - y);
+            perimeter += labs(prevX - x) + labs(prevY - y);
         }
 
-        long long tmp = this->calculate(points);
-        reverse(points.begin(), points.end());
-        tmp = max(tmp, this->calculate(points));
-
-        tmp += area;
-
-        sol = tmp - points.size() / 2 + 1;
-
-        return sol;
+        long long area = getShoelaceArea(points);
+        return getPointsInsidePolygon(area, perimeter);
     }
 };
 
