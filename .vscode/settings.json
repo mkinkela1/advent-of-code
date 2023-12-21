@@ -14,6 +14,15 @@
     "queue": "cpp",
     "tuple": "cpp",
     "__locale": "cpp",
-    "locale": "cpp"
+    "locale": "cpp",
+    "__hash_table": "cpp",
+    "__tree": "cpp",
+    "array": "cpp",
+    "bitset": "cpp",
+    "initializer_list": "cpp",
+    "stack": "cpp",
+    "string_view": "cpp",
+    "unordered_map": "cpp",
+    "unordered_set": "cpp"
   }
 }
