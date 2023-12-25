@@ -24,6 +24,7 @@
     "string_view": "cpp",
     "unordered_map": "cpp",
     "unordered_set": "cpp",
-    "__bit_reference": "cpp"
+    "__bit_reference": "cpp",
+    "limits": "cpp"
   }
 }
