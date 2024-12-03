@@ -26,6 +26,7 @@
     "unordered_set": "cpp",
     "__bit_reference": "cpp",
     "limits": "cpp",
-    "fstream": "cpp"
+    "fstream": "cpp",
+    "regex": "cpp"
   }
 }
