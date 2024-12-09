@@ -27,6 +27,9 @@
     "__bit_reference": "cpp",
     "limits": "cpp",
     "fstream": "cpp",
-    "regex": "cpp"
+    "regex": "cpp",
+    "memory": "cpp",
+    "istream": "cpp",
+    "variant": "cpp"
   }
 }
