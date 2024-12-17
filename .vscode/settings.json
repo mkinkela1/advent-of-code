@@ -1,5 +1,6 @@
 {
   "files.associations": {
+    "*.dbclient-js": "javascript",
     "*.ejs": "html",
     "set": "cpp",
     "ostream": "cpp",
@@ -30,6 +31,8 @@
     "regex": "cpp",
     "memory": "cpp",
     "istream": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "ios": "cpp",
+    "iterator": "cpp"
   }
 }
