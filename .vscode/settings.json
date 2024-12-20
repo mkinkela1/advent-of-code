@@ -1,5 +1,6 @@
 {
   "files.associations": {
+    "*.ndjson": "jsonl",
     "*.dbclient-js": "javascript",
     "*.ejs": "html",
     "set": "cpp",
@@ -33,6 +34,31 @@
     "istream": "cpp",
     "variant": "cpp",
     "ios": "cpp",
-    "iterator": "cpp"
+    "iterator": "cpp",
+    "__node_handle": "cpp",
+    "__verbose_abort": "cpp",
+    "cctype": "cpp",
+    "clocale": "cpp",
+    "cmath": "cpp",
+    "cstdarg": "cpp",
+    "cstddef": "cpp",
+    "cstdint": "cpp",
+    "cstdio": "cpp",
+    "cstdlib": "cpp",
+    "cstring": "cpp",
+    "ctime": "cpp",
+    "cwchar": "cpp",
+    "cwctype": "cpp",
+    "execution": "cpp",
+    "iomanip": "cpp",
+    "mutex": "cpp",
+    "new": "cpp",
+    "optional": "cpp",
+    "print": "cpp",
+    "ratio": "cpp",
+    "stdexcept": "cpp",
+    "streambuf": "cpp",
+    "typeinfo": "cpp",
+    "algorithm": "cpp"
   }
 }
