@@ -11,7 +11,7 @@
 
 using namespace std;
 
-const uint64_t MOD = 16777216;
+const uint64_t MOD = (1 << 24) - 1;
 const uint64_t MOD_HASH = 130321;
 
 class Solution
@@ -31,12 +31,12 @@ private:
 
     void getNewSecret(uint64_t &secret)
     {
-        uint64_t next = secret * 64ULL;
-        secret = (secret ^ next) % MOD;
-        next = secret / 32ULL;
-        secret = (secret ^ next) % MOD;
-        next = secret * 2048ULL;
-        secret = (secret ^ next) % MOD;
+        uint64_t next = secret << 6;
+        secret = (secret ^ next) & MOD;
+        next = secret >> 5;
+        secret = (secret ^ next) & MOD;
+        next = secret << 11;
+        secret = (secret ^ next) & MOD;
     }
 
 public:
