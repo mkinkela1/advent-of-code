@@ -204,7 +204,7 @@ auto main() -> int
     Solution test2 = Solution("test2.txt");
 
     cout << "Part 1 test: " << test1.part1() << endl;
-    // cout << "Part 1: " << aoc.part1() << endl;
+    cout << "Part 1: " << aoc.part1() << endl;
     cout << "--------------------------" << endl;
     cout << "Part 2 test: " << test2.part2() << endl;
     cout << "Part 2: " << aoc.part2() << endl;
