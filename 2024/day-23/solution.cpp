@@ -37,34 +37,6 @@ private:
         }
     }
 
-    set<string> bfs(string start, set<string> &visited)
-    {
-        queue<string> q;
-        set<string> unique;
-        q.push(start);
-        visited.insert(start);
-        unique.insert(start);
-
-        while (!q.empty())
-        {
-            string current = q.front();
-            q.pop();
-
-            unique.insert(current);
-
-            for (auto c : this->connections[current])
-            {
-                if (visited.find(c) == visited.end())
-                {
-                    visited.insert(c);
-                    q.push(c);
-                }
-            }
-        }
-
-        return unique;
-    }
-
     void BronKerbosch(set<string> R, set<string> P, set<string> X)
     {
         if (P.empty() && X.empty())
