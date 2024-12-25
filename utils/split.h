@@ -5,6 +5,9 @@ using namespace std;
 
 auto split(string s, string delimiter) -> vector<string>
 {
+    if (s.empty())
+        return vector<string>();
+
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     string token;
     vector<string> res;
