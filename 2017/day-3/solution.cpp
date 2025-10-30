@@ -157,6 +157,8 @@ public:
     while (true)
     {
 
+      cout << "x: " << x << ", y: " << y << endl;
+
       grid[{x, y}] = grid[{x - 1, y}] + grid[{x, y - 1}] + grid[{x + 1, y}] +
                      grid[{x, y + 1}] + grid[{x - 1, y - 1}] +
                      grid[{x + 1, y - 1}] + grid[{x - 1, y + 1}] +
