@@ -62,13 +62,6 @@
     "algorithm": "cpp"
   },
   "C_Cpp.errorSquiggles": "disabled",
-  "code-runner.executorMap": {
-    "cpp": "cd $dir && g++ -std=c++20 -o $fileNameWithoutExt $fileName && $dir$fileNameWithoutExt"
-  },
-  "code-runner.runInTerminal": true,
-  "code-runner.saveFileBeforeRun": true,
-  "code-runner.clearPreviousOutput": true,
-  "code-runner.showExecutionMessage": true,
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "clang",
   "C_Cpp_Runner.cppCompilerPath": "clang++",

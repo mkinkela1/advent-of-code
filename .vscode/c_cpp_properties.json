@@ -2,9 +2,7 @@
   "configurations": [
     {
       "name": "macos-clang-arm64",
-      "includePath": [
-        "${workspaceFolder}/**"
-      ],
+      "includePath": ["${workspaceFolder}/**"],
       "defines": [],
       "macFrameworkPath": [],
       "compilerPath": "/opt/homebrew/opt/llvm/bin/clang",
