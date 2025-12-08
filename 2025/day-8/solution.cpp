@@ -73,6 +73,7 @@ class Solution {
 private:
   fstream fin;
   vector<tuple<int, int, int>> data;
+  vector<pair<int, int>> pairs;
   void parse() {
     string line;
     while (getline(this->fin, line)) {
@@ -80,10 +81,29 @@ private:
       this->data.push_back(
           make_tuple(stoi(parts[0]), stoi(parts[1]), stoi(parts[2])));
     }
+
+    for (int i = 0; i < this->data.size() - 1; i++) {
+      for (int j = i + 1; j < this->data.size(); j++) {
+        this->pairs.push_back(make_pair(i, j));
+      }
+    }
+
+    sort(this->pairs.begin(), this->pairs.end(),
+         [this](const pair<int, int> &a, const pair<int, int> &b) {
+           const auto [xa1, ya1, za1] = this->data[a.first];
+           const auto [xa2, ya2, za2] = this->data[a.second];
+           const auto [xb1, yb1, zb1] = this->data[b.first];
+           const auto [xb2, yb2, zb2] = this->data[b.second];
+           const auto distanceA = this->distance(xa1, ya1, za1, xa2, ya2, za2);
+           const auto distanceB = this->distance(xb1, yb1, zb1, xb2, yb2, zb2);
+           return distanceA < distanceB;
+         });
   }
 
-  auto distance(int x1, int y1, int z1, int x2, int y2, int z2) -> long double {
-    return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2) + pow(z1 - z2, 2));
+  auto distance(int x1, int y1, int z1, int x2, int y2, int z2)
+      -> unsigned long long {
+    return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) +
+           (z1 - z2) * (z1 - z2);
   }
 
 public:
@@ -94,28 +114,10 @@ public:
   }
 
   auto part1(int n = 10) -> unsigned long long {
-    vector<pair<int, int>> pairs;
-    for (int i = 0; i < this->data.size() - 1; i++) {
-      for (int j = i + 1; j < this->data.size(); j++) {
-        pairs.push_back(make_pair(i, j));
-      }
-    }
-
     UnionFind uf(this->data.size());
 
-    sort(pairs.begin(), pairs.end(),
-         [this](const pair<int, int> &a, const pair<int, int> &b) {
-           const auto [xa1, ya1, za1] = this->data[a.first];
-           const auto [xa2, ya2, za2] = this->data[a.second];
-           const auto [xb1, yb1, zb1] = this->data[b.first];
-           const auto [xb2, yb2, zb2] = this->data[b.second];
-           const auto distanceA = this->distance(xa1, ya1, za1, xa2, ya2, za2);
-           const auto distanceB = this->distance(xb1, yb1, zb1, xb2, yb2, zb2);
-           return distanceA < distanceB;
-         });
-
     for (int i = 0; i < n; i++) {
-      auto [first, second] = pairs[i];
+      auto [first, second] = this->pairs[i];
       uf.unionSet(first, second);
     }
 
@@ -132,35 +134,17 @@ public:
       mul *= numberOfItems;
       idx++;
       if (idx == 3) {
-        break;
+        return mul;
       }
     }
     return mul;
   }
 
   auto part2() -> unsigned long long {
-    vector<pair<int, int>> pairs;
-    for (int i = 0; i < this->data.size() - 1; i++) {
-      for (int j = i + 1; j < this->data.size(); j++) {
-        pairs.push_back(make_pair(i, j));
-      }
-    }
-
     UnionFind uf(this->data.size());
 
-    sort(pairs.begin(), pairs.end(),
-         [this](const pair<int, int> &a, const pair<int, int> &b) {
-           const auto [xa1, ya1, za1] = this->data[a.first];
-           const auto [xa2, ya2, za2] = this->data[a.second];
-           const auto [xb1, yb1, zb1] = this->data[b.first];
-           const auto [xb2, yb2, zb2] = this->data[b.second];
-           const auto distanceA = this->distance(xa1, ya1, za1, xa2, ya2, za2);
-           const auto distanceB = this->distance(xb1, yb1, zb1, xb2, yb2, zb2);
-           return distanceA < distanceB;
-         });
-
-    for (int i = 0; i < pairs.size(); i++) {
-      auto [first, second] = pairs[i];
+    for (int i = 0; i < this->pairs.size(); i++) {
+      auto [first, second] = this->pairs[i];
       if (uf.connected(first, second)) {
         continue;
       }
@@ -184,11 +168,35 @@ auto main() -> int {
   Solution test1 = Solution("test1.txt");
   Solution test2 = Solution("test2.txt");
 
-  cout << "Part 1 test: " << test1.part1() << endl;
-  cout << "Part 1: " << aoc.part1(1000) << endl;
+  auto start = chrono::high_resolution_clock::now();
+  auto part1TestResult = test1.part1();
+  auto end = chrono::high_resolution_clock::now();
+  auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+  cout << "Part 1 test: " << part1TestResult << " (Time: " << duration.count()
+       << " μs)" << endl;
+
+  start = chrono::high_resolution_clock::now();
+  auto part1Result = aoc.part1(1000);
+  end = chrono::high_resolution_clock::now();
+  duration = chrono::duration_cast<chrono::microseconds>(end - start);
+  cout << "Part 1: " << part1Result << " (Time: " << duration.count() << " μs)"
+       << endl;
+
   cout << "--------------------------" << endl;
-  cout << "Part 2 test: " << test2.part2() << endl;
-  cout << "Part 2: " << aoc.part2() << endl;
+
+  start = chrono::high_resolution_clock::now();
+  auto part2TestResult = test2.part2();
+  end = chrono::high_resolution_clock::now();
+  duration = chrono::duration_cast<chrono::microseconds>(end - start);
+  cout << "Part 2 test: " << part2TestResult << " (Time: " << duration.count()
+       << " μs)" << endl;
+
+  start = chrono::high_resolution_clock::now();
+  auto part2Result = aoc.part2();
+  end = chrono::high_resolution_clock::now();
+  duration = chrono::duration_cast<chrono::microseconds>(end - start);
+  cout << "Part 2: " << part2Result << " (Time: " << duration.count() << " μs)"
+       << endl;
 
   return 0;
 }
