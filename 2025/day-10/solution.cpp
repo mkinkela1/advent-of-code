@@ -17,54 +17,6 @@
 
 using namespace std;
 
-auto solveButtonProblem(const vector<vector<int>> &A, const vector<int> &B)
-    -> vector<int> {
-  int N = A.size();                    // number of counters (rows)
-  int M = A.empty() ? 0 : A[0].size(); // number of buttons (columns)
-  std::vector<int> result(M, 0);       // default return if no solution
-
-  if (N == 0 || M == 0)
-    return result;
-
-  z3::context ctx;
-  z3::optimize opt(ctx);
-
-  // Create integer variables x0..xM-1
-  std::vector<z3::expr> x;
-  x.reserve(M);
-  for (int i = 0; i < M; ++i)
-    x.push_back(ctx.int_const(("x" + std::to_string(i)).c_str()));
-
-  // Constraints: x[i] >= 0
-  for (int i = 0; i < M; ++i)
-    opt.add(x[i] >= 0);
-
-  // Constraints: A * x = B
-  for (int r = 0; r < N; ++r) {
-    z3::expr sum = ctx.int_val(0);
-    for (int c = 0; c < M; ++c)
-      sum = sum + A[r][c] * x[c];
-    opt.add(sum == B[r]);
-  }
-
-  // Objective: minimize total clicks
-  z3::expr total = ctx.int_val(0);
-  for (int i = 0; i < M; ++i)
-    total = total + x[i];
-  opt.minimize(total);
-
-  if (opt.check() == z3::sat) {
-    z3::model m = opt.get_model();
-    for (int i = 0; i < M; ++i) {
-      result[i] = m.eval(x[i]).get_numeral_int();
-    }
-  } else {
-    std::cerr << "No solution found.\n";
-  }
-
-  return result;
-}
-
 class Lights {
 private:
   unsigned long long lights;
@@ -87,6 +39,54 @@ private:
       }
     }
     return true;
+  }
+
+  auto solveButtonProblem(const vector<vector<int>> &A, const vector<int> &B)
+      -> vector<int> {
+    int N = A.size();                    // number of counters (rows)
+    int M = A.empty() ? 0 : A[0].size(); // number of buttons (columns)
+    std::vector<int> result(M, 0);       // default return if no solution
+
+    if (N == 0 || M == 0)
+      return result;
+
+    z3::context ctx;
+    z3::optimize opt(ctx);
+
+    // Create integer variables x0..xM-1
+    std::vector<z3::expr> x;
+    x.reserve(M);
+    for (int i = 0; i < M; ++i)
+      x.push_back(ctx.int_const(("x" + std::to_string(i)).c_str()));
+
+    // Constraints: x[i] >= 0
+    for (int i = 0; i < M; ++i)
+      opt.add(x[i] >= 0);
+
+    // Constraints: A * x = B
+    for (int r = 0; r < N; ++r) {
+      z3::expr sum = ctx.int_val(0);
+      for (int c = 0; c < M; ++c)
+        sum = sum + A[r][c] * x[c];
+      opt.add(sum == B[r]);
+    }
+
+    // Objective: minimize total clicks
+    z3::expr total = ctx.int_val(0);
+    for (int i = 0; i < M; ++i)
+      total = total + x[i];
+    opt.minimize(total);
+
+    if (opt.check() == z3::sat) {
+      z3::model m = opt.get_model();
+      for (int i = 0; i < M; ++i) {
+        result[i] = m.eval(x[i]).get_numeral_int();
+      }
+    } else {
+      std::cerr << "No solution found.\n";
+    }
+
+    return result;
   }
 
 public:

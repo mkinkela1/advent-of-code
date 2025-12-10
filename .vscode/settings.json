@@ -69,7 +69,7 @@
   "code-runner.runInTerminal": true,
   "C_Cpp.debugShortcut": false,
   "code-runner.executorMap": {
-    "cpp": "cd $dir && Z3_PATH=\"\"; if [ -d z3 ]; then Z3_PATH=\"z3\"; elif [ -d ../../libs/z3 ]; then Z3_PATH=\"../../libs/z3\"; elif [ -d ../libs/z3 ]; then Z3_PATH=\"../libs/z3\"; elif [ -d ../../../libs/z3 ]; then Z3_PATH=\"../../../libs/z3\"; fi; if [ -n \"$Z3_PATH\" ]; then g++ -std=c++20 -O3 $fileName -I $Z3_PATH/include -L $Z3_PATH/bin -lz3 -Wl,-rpath,\"@loader_path/$Z3_PATH/bin\" -o $fileNameWithoutExt && (otool -L $fileNameWithoutExt 2>/dev/null | grep -q libz3.dylib && install_name_tool -change libz3.dylib \"@loader_path/$Z3_PATH/bin/libz3.dylib\" $fileNameWithoutExt 2>/dev/null || true) && ./$fileNameWithoutExt; else g++ -std=c++20 -O3 $fileName -o $fileNameWithoutExt && ./$fileNameWithoutExt; fi"
+    "cpp": "$workspaceRoot/run_cpp.sh $dir $fileName $fileNameWithoutExt"
   },
   "code-runner.saveFileBeforeRun": true,
   "code-runner.clearPreviousOutput": true

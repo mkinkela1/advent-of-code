@@ -5,3 +5,11 @@
 /**/*.txt
 
 /**/tempCodeRunnerFile.cpp
+libs
+
+# C++ build artifacts
+/**/solution
+*.o
+*.out
+a.out
+*.exe
