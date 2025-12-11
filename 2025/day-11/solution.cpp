@@ -32,51 +32,41 @@ private:
     }
   }
 
-  auto findDifferentPaths(string start, map<string, vector<string>> graph)
-      -> int {
-    int ret = 0;
-    queue<string> q;
-    q.push(start);
-    while (!q.empty()) {
-      string current = q.front();
-      q.pop();
-      if (current == "out") {
-        ret++;
-      }
-      for (string neighbor : graph[current]) {
-        if (neighbor == "out") {
-          ret++;
-        } else {
-          q.push(neighbor);
-        }
-      }
+  auto countPaths(string current, string end,
+                  map<string, vector<string>> &graph,
+                  map<string, long long unsigned> &memo) -> long long unsigned {
+
+    if (memo.find(current) != memo.end()) {
+      return memo[current];
     }
-    return ret;
+    if (current == end) {
+      return memo[current] = 1LLU;
+    }
+    long long unsigned ret = 0LLU;
+    for (string child : graph[current]) {
+      ret += this->countPaths(child, end, graph, memo);
+    }
+    return memo[current] = ret;
   }
 
-  auto findDifferentPathsContainingNodes(
-      string current, bool passedDac, bool passedFft,
-      map<string, vector<string>> graph,
-      map<tuple<string, bool, bool>, long long> &memo) -> long long {
-    if (memo[{current, passedDac, passedFft}] != -1)
-      return memo[{current, passedDac, passedFft}];
-    if (current == "out")
-      return memo[{current, passedDac, passedFft}] =
-                 (passedDac && passedFft) ? 1LL : 0LL;
+  auto countTotalPaths(vector<string> nodes) -> long long unsigned {
+    map<string, long long unsigned> memo;
+    long long unsigned middlePaths =
+        this->countPaths(nodes[1], nodes[2], this->graph, memo);
 
-    long long ret = 0LL;
-    for (string neighbor : graph[current]) {
-      int nextPassedDac = passedDac;
-      int nextPassedFft = passedFft;
-      if (neighbor == "dac")
-        nextPassedDac = true;
-      else if (neighbor == "fft")
-        nextPassedFft = true;
-
-      ret += this->findDifferentPathsContainingNodes(
-          neighbor, nextPassedDac, nextPassedFft, graph, memo);
+    if (middlePaths == 0) {
+      return 0LLU;
     }
-    return memo[{current, passedDac, passedFft}] = ret;
+
+    memo.clear();
+    long long unsigned startPaths =
+        this->countPaths(nodes[0], nodes[1], this->graph, memo);
+
+    memo.clear();
+    long long unsigned endPaths =
+        this->countPaths(nodes[2], nodes[3], this->graph, memo);
+
+    return startPaths * middlePaths * endPaths;
   }
 
 public:
@@ -86,24 +76,19 @@ public:
     this->fin.close();
   }
 
-  auto part1() -> int { return this->findDifferentPaths("you", this->graph); }
+  auto part1() -> long long unsigned {
+    map<string, long long unsigned> memo;
+    return this->countPaths("you", "out", this->graph, memo);
+  }
 
-  auto part2() -> long long {
-    map<tuple<string, bool, bool>, long long> memo;
-    for (auto [node, neighbors] : this->graph) {
-      memo[{node, false, false}] = -1;
-      memo[{node, true, false}] = -1;
-      memo[{node, false, true}] = -1;
-      memo[{node, true, true}] = -1;
-      for (string neighbor : neighbors) {
-        memo[{neighbor, false, false}] = -1;
-        memo[{neighbor, true, false}] = -1;
-        memo[{neighbor, false, true}] = -1;
-        memo[{neighbor, true, true}] = -1;
-      }
+  auto part2() -> long long unsigned {
+    auto totalPaths =
+        this->countTotalPaths(vector<string>{"svr", "fft", "dac", "out"});
+    if (totalPaths > 0) {
+      return totalPaths;
     }
-    return this->findDifferentPathsContainingNodes("svr", false, false,
-                                                   this->graph, memo);
+
+    return this->countTotalPaths(vector<string>{"svr", "dac", "fft", "out"});
   }
 };
 
