@@ -123,7 +123,13 @@ touch "$parent_folder/$child_folder/test1.txt"
 touch "$parent_folder/$child_folder/test2.txt"
 curl --cookie "session=$AOC_COOKIE" https://adventofcode.com/$1/day/$2/input > "$parent_folder/$child_folder/input.txt"
 
-# Check if folder2 is 25 and print Merry Christmas with animation
-if [ "$2" -eq 25 ]; then
-    printChristmasTree
+# Check if folder2 is 25 (or 12 for 2025+) and print Merry Christmas with animation
+if [ "$parent_folder" -ge 2025 ]; then
+    if [ "$2" -eq 12 ]; then
+        printChristmasTree
+    fi
+else
+    if [ "$2" -eq 25 ]; then
+        printChristmasTree
+    fi
 fi
