@@ -118,7 +118,7 @@ else
     fi
 fi
 
-touch "$parent_folder/$child_folder/solution.cpp"
+cp "$(dirname "$0")/solution_template.cpp" "$parent_folder/$child_folder/solution.cpp"
 touch "$parent_folder/$child_folder/test1.txt"
 touch "$parent_folder/$child_folder/test2.txt"
 curl --cookie "session=$AOC_COOKIE" https://adventofcode.com/$1/day/$2/input > "$parent_folder/$child_folder/input.txt"
