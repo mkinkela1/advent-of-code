@@ -28,7 +28,7 @@ elif [ -d ../../../libs/z3 ]; then
 fi
 
 # Build compilation command
-COMPILE_CMD="g++ -std=c++20 -O3 $FILENAME"
+COMPILE_CMD="g++ -std=c++26 -O3 $FILENAME"
 
 # Add Z3 library if found
 if [ -n "$Z3_PATH" ]; then

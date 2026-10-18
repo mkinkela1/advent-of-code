@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <numeric>
 #include <queue>
 #include <stack>
 #include <tuple>
@@ -16,14 +17,73 @@
 
 using namespace std;
 
+int nodeId = 0;
+
+struct Node {
+  int id;
+  int numChildren;
+  int numMetadata;
+  vector<Node *> children;
+  vector<int> metadata;
+
+  Node(int numChildren, int numMetadata) {
+    this->numChildren = numChildren;
+    this->numMetadata = numMetadata;
+    this->id = nodeId++;
+  }
+};
+
 class Solution {
 private:
   fstream fin;
+  vector<int> numbers;
+  vector<long long> metadata;
+  int index = 0;
+  Node *root = nullptr;
 
   void parse() {
     string line;
+
     while (getline(this->fin, line)) {
+      vector<string> data = split(line, " ");
+      for (string number : data) {
+        this->numbers.push_back(stoi(number));
+      }
     }
+
+    this->root = generateTree();
+  }
+
+  auto generateTree() -> Node * {
+    int numChildren = this->numbers[this->index++];
+    int numMetadata = this->numbers[this->index++];
+
+    Node *node = new Node(numChildren, numMetadata);
+    for (int i = 0; i < numChildren; i++) {
+      node->children.push_back(generateTree());
+    }
+    for (int i = 0; i < numMetadata; i++) {
+      long long metadata = this->numbers[this->index++];
+      this->metadata.push_back(metadata);
+      node->metadata.push_back(metadata);
+    }
+
+    return node;
+  }
+
+  auto getValue(Node *node) -> long long {
+    if (node->numChildren == 0) {
+      return accumulate(node->metadata.begin(), node->metadata.end(), 0LL);
+    }
+    long long sum = 0;
+    for (int metadata : node->metadata) {
+      int index = metadata - 1;
+      if (index >= node->numChildren || index < 0) {
+        continue;
+      }
+      sum += getValue(node->children[index]);
+    }
+    return sum;
   }
 
 public:
@@ -33,9 +93,11 @@ public:
     this->fin.close();
   }
 
-  auto part1() -> string { return "Not implemented"; }
+  auto part1() -> long long {
+    return accumulate(this->metadata.begin(), this->metadata.end(), 0LL);
+  }
 
-  auto part2() -> string { return "Not implemented"; }
+  auto part2() -> long long { return getValue(this->root); }
 };
 
 auto main() -> int {
@@ -75,4 +137,3 @@ auto main() -> int {
 
   return 0;
 }
-
